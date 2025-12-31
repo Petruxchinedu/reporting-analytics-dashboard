@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 16, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/middleware.ts"],"sourcesContent":["import { NextResponse } from 'next/server'\r\nimport type { NextRequest } from 'next/server'\r\n\r\nexport function middleware(request: NextRequest) {\r\n  const { pathname } = request.nextUrl\r\n  const session = request.cookies.get('next-auth.session-token') || \r\n                  request.cookies.get('__Secure-next-auth.session-token')\r\n\r\n  // If the user is trying to access the root dashboard but has no session\r\n  if (pathname === '/' && !session) {\r\n    return NextResponse.redirect(new URL('/login', request.url))\r\n  }\r\n\r\n  return NextResponse.next()\r\n}\r\n\r\nexport const config = {\r\n  matcher: ['/'], // Only protects the root index page\r\n}"],"names":[],"mappings":";;;;;;AAAA;AAAA;;AAGO,SAAS,WAAW,OAAoB;IAC7C,MAAM,EAAE,QAAQ,EAAE,GAAG,QAAQ,OAAO;IACpC,MAAM,UAAU,QAAQ,OAAO,CAAC,GAAG,CAAC,8BACpB,QAAQ,OAAO,CAAC,GAAG,CAAC;IAEpC,wEAAwE;IACxE,IAAI,aAAa,OAAO,CAAC,SAAS;QAChC,OAAO,+TAAY,CAAC,QAAQ,CAAC,IAAI,IAAI,UAAU,QAAQ,GAAG;IAC5D;IAEA,OAAO,+TAAY,CAAC,IAAI;AAC1B;AAEO,MAAM,SAAS;IACpB,SAAS;QAAC;KAAI;AAChB"}}]
+}

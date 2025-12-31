@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 16, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/bless/Documents/dashboard-monorepo/frontend/pages/api/test-db.ts"],"sourcesContent":["// pages/api/test-db.ts\r\nimport type { NextApiRequest, NextApiResponse } from \"next\";\r\nimport { connectDB } from \"@/lib/db\";\r\n\r\nexport default async function handler(req: NextApiRequest, res: NextApiResponse) {\r\n  try {\r\n    await connectDB();\r\n    res.status(200).json({ message: \"MongoDB connected\" });\r\n  } catch (err) {\r\n    res.status(500).json({ message: \"MongoDB connection failed\", error: err });\r\n  }\r\n}\r\n"],"names":[],"mappings":"AAAA,uBAAuB;;;;;;;;;;;AAIR,eAAe,QAAQ,GAAmB,EAAE,GAAoB;IAC7E,IAAI;QACF,MAAM;QACN,IAAI,MAAM,CAAC,KAAK,IAAI,CAAC;YAAE,SAAS;QAAoB;IACtD,EAAE,OAAO,KAAK;QACZ,IAAI,MAAM,CAAC,KAAK,IAAI,CAAC;YAAE,SAAS;YAA6B,OAAO;QAAI;IAC1E;AACF"}}]
+}
