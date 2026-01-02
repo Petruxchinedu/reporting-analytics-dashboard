@@ -1,2 +1,10 @@
 .env.local
-node_modules
+# Next.js build and cache
+.next/
+out/
+build/
+.env
+# Production
+node_modules/
+*.log
+.DS_Store
