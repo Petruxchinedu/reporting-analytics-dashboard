@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/bless/Documents/dashboard-monorepo/frontend/pages/settings.tsx"],"sourcesContent":["\"use client\";\r\n\r\nimport { \r\n  Box, \r\n  Heading, \r\n  Text, \r\n  Stack, \r\n  Field, \r\n  Input, \r\n  Button, \r\n  Separator, \r\n  Flex, \r\n  Switch, \r\n  SimpleGrid // <--- Make sure this is here\r\n} from \"@chakra-ui/react\";\r\nimport DashboardLayout from \"../components/layout/DashboardLayout\";"],"names":[],"mappings":";AAAA"}}]
-}

@@ -1,3 +1,0 @@
-[00:00:04.492] Server  WARN    ⚠ Duplicate page detected. pages\api\reports.ts and pages\api\reports\index.ts resolve to /api/reports
-[00:00:04.493] Server  WARN    ⚠ Duplicate page detected. pages\api\reports.ts and pages\api\reports\index.ts resolve to /api/reports
-[00:00:04.494] Server  LOG     ✓ Ready in 3.4s

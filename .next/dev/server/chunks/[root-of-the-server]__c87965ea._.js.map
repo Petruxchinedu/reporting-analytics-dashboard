@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 16, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/bless/Documents/dashboard-monorepo/frontend/pages/api/analytics.ts"],"sourcesContent":["import type { NextApiRequest, NextApiResponse } from \"next\";\r\n\r\n// Mock analytics data\r\nconst analyticsData = {\r\n  stats: [\r\n    { label: \"Total Visits\", value: \"128,430\", change: \"+12.5%\", icon: \"LuUsers\" },\r\n    { label: \"Avg. Session\", value: \"4m 32s\", change: \"+2.1%\", icon: \"LuActivity\" },\r\n    { label: \"Conversion Rate\", value: \"3.42%\", change: \"+0.8%\", icon: \"LuTrendingUp\" },\r\n  ],\r\n};\r\n\r\nexport default function handler(req: NextApiRequest, res: NextApiResponse) {\r\n  res.status(200).json(analyticsData);\r\n}\r\n"],"names":[],"mappings":";;;;AAEA,sBAAsB;AACtB,MAAM,gBAAgB;IACpB,OAAO;QACL;YAAE,OAAO;YAAgB,OAAO;YAAW,QAAQ;YAAU,MAAM;QAAU;QAC7E;YAAE,OAAO;YAAgB,OAAO;YAAU,QAAQ;YAAS,MAAM;QAAa;QAC9E;YAAE,OAAO;YAAmB,OAAO;YAAS,QAAQ;YAAS,MAAM;QAAe;KACnF;AACH;AAEe,SAAS,QAAQ,GAAmB,EAAE,GAAoB;IACvE,IAAI,MAAM,CAAC,KAAK,IAAI,CAAC;AACvB"}}]
-}
