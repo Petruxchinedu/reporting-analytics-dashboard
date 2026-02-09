@@ -4,24 +4,16 @@ export type MetricType = "revenue" | "users" | "sessions";
 export type RegionType = "global" | "us" | "eu" | "asia";
 export type DateRangeType = "7d" | "30d" | "90d";
 
-interface DateRange {
-  from: string;
-  to: string;
-}
-
 interface FiltersState {
   metric: MetricType;
   region: RegionType;
-  dateRange: DateRange;
+  dateRange: DateRangeType;
 }
 
 const initialState: FiltersState = {
   metric: "revenue",
   region: "global",
-  dateRange: {
-    from: "2024-01-01",
-    to: "2024-12-31",
-  },
+  dateRange: "7d",
 };
 
 const filtersSlice = createSlice({
@@ -34,7 +26,7 @@ const filtersSlice = createSlice({
     setRegion(state, action: PayloadAction<RegionType>) {
       state.region = action.payload;
     },
-    setDateRange(state, action: PayloadAction<DateRange>) {
+    setDateRange(state, action: PayloadAction<DateRangeType>) {
       state.dateRange = action.payload;
     },
   },
