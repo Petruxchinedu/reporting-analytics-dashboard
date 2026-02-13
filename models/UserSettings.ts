@@ -6,6 +6,11 @@ export interface IUserSettings extends Document {
   defaultMetric: string;
   defaultRegion: string;
   notificationsEnabled: boolean;
+  filters?: {
+    metric?: string;
+    dateRange?: string;
+    department?: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -39,6 +44,12 @@ const UserSettingsSchema = new Schema<IUserSettings>(
     notificationsEnabled: {
       type: Boolean,
       default: true,
+    },
+
+    filters: {
+      metric: { type: String, default: "revenue" },
+      dateRange: { type: String, default: "month" },
+      department: { type: String },
     },
   },
   {

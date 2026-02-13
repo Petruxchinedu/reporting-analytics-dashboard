@@ -1,11 +1,9 @@
-"use client";
-
 import { useState } from "react";
-import { Box, Button, Flex, Stack, Heading, Text, Input, Field } from "@chakra-ui/react";
+import { Flex, Stack, Heading, Text, Button, Input } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { toaster } from "../components/ui/toaster";
 
-export default function ForgotPasswordPage() {
+function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
 
   const mutation = useMutation({
@@ -36,10 +34,16 @@ export default function ForgotPasswordPage() {
 
         <form onSubmit={(e) => { e.preventDefault(); mutation.mutate(email); }}>
           <Stack gap={4}>
-            <Field.Root>
-              <Field.Label>Email Address</Field.Label>
-              <Input type="email" placeholder="name@company.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </Field.Root>
+            <Stack gap={1.5}>
+              <Text fontSize="sm" fontWeight="medium">Email Address</Text>
+              <Input 
+                type="email" 
+                placeholder="name@company.com" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+                required 
+              />
+            </Stack>
             <Button type="submit" colorPalette="teal" size="lg" loading={mutation.isPending}>
               Send Reset Link
             </Button>
@@ -49,3 +53,10 @@ export default function ForgotPasswordPage() {
     </Flex>
   );
 }
+
+// Force server-side rendering in Pages Router
+export async function getServerSideProps() {
+  return { props: {} };
+}
+
+export default ForgotPasswordPage;

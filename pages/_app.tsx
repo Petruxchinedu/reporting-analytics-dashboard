@@ -5,8 +5,9 @@ import { store } from "../store";
 import { Provider as ReduxProvider } from "react-redux";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "../components/ui/toaster";
-import { ColorModeProvider } from "../components/ui/color-mode"; // Manual file we created
+import { ColorModeProvider } from "../components/ui/color-mode";
 import { useState } from "react";
+import { useRouter } from "next/router";
 
 const config = defineConfig({
   theme: {
@@ -29,8 +30,13 @@ const config = defineConfig({
 const system = createSystem(defaultConfig, config);
 
 export default function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
-  // Using useState for QueryClient prevents recreation on re-renders
   const [queryClient] = useState(() => new QueryClient());
+  const router = useRouter();
+
+  // Skip all providers for 404 page to avoid build errors
+  if (router.pathname === '/404' || router.pathname === '/_error') {
+    return <Component {...pageProps} />;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

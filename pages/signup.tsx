@@ -1,14 +1,12 @@
-"use client";
-
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router"; // Changed
 import { 
   Box, Button, Flex, Stack, Heading, Text, Input, 
-  IconButton, HStack, Field, Link as ChakraLink 
+  IconButton, HStack, Link as ChakraLink 
 } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  LuEye, LuEyeOff, LuCircleCheck, LuCircleAlert, 
+  LuEye, LuEyeOff, LuCircleAlert, 
   LuShieldCheck, LuZap, LuGlobe 
 } from "react-icons/lu";
 import { useMutation } from "@tanstack/react-query";
@@ -17,11 +15,10 @@ import { toaster } from "../components/ui/toaster";
 const MotionFlex = motion.create(Flex);
 const MotionStack = motion.create(Stack);
 
-export default function SignUpPage() {
+function SignUpPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   
-  // Form States
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,7 +42,6 @@ export default function SignUpPage() {
         description: "Please check your email to verify your account.", 
         type: "success" 
       });
-      // Redirect to a pending verification state or login
       router.push("/login?status=pending");
     },
     onError: (error: any) => {
@@ -57,7 +53,6 @@ export default function SignUpPage() {
     e.preventDefault();
     setClientError("");
 
-    // --- Validation Logic ---
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setClientError("Please enter a valid email address.");
@@ -76,14 +71,13 @@ export default function SignUpPage() {
   };
 
   return (
-    <Flex minH="100vh" direction={{ base: "column", lg: "row" }} bg="white">
+    <Flex minH="100vh" direction={{ base: "column", lg: "row" }} bg="white" _dark={{ bg: "gray.950" }}>
       {/* Left Side: Brand/Marketing */}
       <Flex 
         flex="1.2" bg="teal.600" align="center" justify="center" p={12} 
         color="white" display={{ base: "none", lg: "flex" }} position="relative"
         overflow="hidden"
       >
-        {/* Subtle Decorative Background Element */}
         <Box 
           position="absolute" top="-10%" right="-10%" w="500px" h="500px" 
           bg="teal.500" borderRadius="full" filter="blur(80px)" opacity="0.4" 
@@ -97,8 +91,8 @@ export default function SignUpPage() {
             gap={6}
           >
             <Heading size="4xl" fontWeight="black" lineHeight="1.1">
-              Analyze your data <br /> 
-              <Text as="span" color="teal.200">like a pro.</Text>
+              Analyze your data 
+              <Text as="span" color="teal.200" display="block">like a pro.</Text>
             </Heading>
             <Text fontSize="xl" color="teal.50" fontWeight="medium">
               Join 10,000+ professionals generating automated reports every day.
@@ -135,11 +129,10 @@ export default function SignUpPage() {
               <Text color="gray.500">Sign up in less than 2 minutes.</Text>
             </Stack>
 
-            {/* Error Message Display */}
             <AnimatePresence>
               {clientError && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
-                  <HStack p={4} bg="red.50" border="1px solid" borderColor="red.200" borderRadius="xl" color="red.700">
+                  <HStack p={4} bg="red.50" _dark={{ bg: "red.950/20", color: "red.400" }} border="1px solid" borderColor="red.200" borderRadius="xl" color="red.700" >
                     <LuCircleAlert />
                     <Text fontSize="sm" fontWeight="medium">{clientError}</Text>
                   </HStack>
@@ -149,24 +142,24 @@ export default function SignUpPage() {
 
             <form onSubmit={handleSubmit}>
               <Stack gap={5}>
-                <Field.Root>
-                  <Field.Label fontWeight="bold">FULL NAME</Field.Label>
+                <Stack gap={1.5}>
+                  <Text fontWeight="bold" fontSize="sm">FULL NAME</Text>
                   <Input 
                     ps="4" size="lg" borderRadius="xl" placeholder="John Doe" 
                     value={fullName} onChange={(e) => setFullName(e.target.value)} required 
                   />
-                </Field.Root>
+                </Stack>
 
-                <Field.Root>
-                  <Field.Label fontWeight="bold">EMAIL ADDRESS</Field.Label>
+                <Stack gap={1.5}>
+                  <Text fontWeight="bold" fontSize="sm">EMAIL ADDRESS</Text>
                   <Input 
                     type="email" ps="4" size="lg" borderRadius="xl" placeholder="name@company.com" 
                     value={email} onChange={(e) => setEmail(e.target.value)} required 
                   />
-                </Field.Root>
+                </Stack>
 
-                <Field.Root>
-                  <Field.Label fontWeight="bold">PASSWORD</Field.Label>
+                <Stack gap={1.5}>
+                  <Text fontWeight="bold" fontSize="sm">PASSWORD</Text>
                   <Flex position="relative" align="center">
                     <Input 
                       type={showPassword ? "text" : "password"} ps="4" size="lg" borderRadius="xl" 
@@ -183,16 +176,16 @@ export default function SignUpPage() {
                       {showPassword ? <LuEyeOff /> : <LuEye />}
                     </IconButton>
                   </Flex>
-                </Field.Root>
+                </Stack>
 
-                <Field.Root>
-                  <Field.Label fontWeight="bold">CONFIRM PASSWORD</Field.Label>
+                <Stack gap={1.5}>
+                  <Text fontWeight="bold" fontSize="sm">CONFIRM PASSWORD</Text>
                   <Input 
                     type="password" ps="4" size="lg" borderRadius="xl" 
                     placeholder="Repeat password" value={confirmPassword} 
                     onChange={(e) => setConfirmPassword(e.target.value)} required 
                   />
-                </Field.Root>
+                </Stack>
 
                 <Button 
                   type="submit" colorPalette="teal" size="xl" borderRadius="xl" 
@@ -215,3 +208,9 @@ export default function SignUpPage() {
     </Flex>
   );
 }
+
+export async function getServerSideProps() {
+  return { props: {} };
+}
+
+export default SignUpPage;

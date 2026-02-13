@@ -1,47 +1,76 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { Center, Spinner, Stack, Heading, Text, Button, Icon } from "@chakra-ui/react";
+import { useRouter } from "next/router"; // Changed from next/navigation
+import { Center, Spinner, Stack, Heading, Text, Button, Box } from "@chakra-ui/react";
 import { LuCircleCheck, LuCircleX } from "react-icons/lu";
 
-export default function VerifyEmailPage() {
-  const searchParams = useSearchParams();
+function VerifyEmailPage() {
   const router = useRouter();
-  const token = searchParams.get("token");
+  const { token } = router.query; // Get token from query params
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
 
   useEffect(() => {
-    if (token) {
+    if (token && typeof token === 'string') {
       fetch(`/api/auth/verify?token=${token}`)
         .then((res) => res.ok ? setStatus("success") : setStatus("error"))
         .catch(() => setStatus("error"));
+    } else if (router.isReady && !token) {
+      // Only set error if router is ready and still no token
+      setStatus("error");
     }
-  }, [token]);
+  }, [token, router.isReady]);
 
   return (
-    <Center h="100vh" bg="gray.50">
-      <Stack align="center" gap={6} p={10} bg="white" borderRadius="2xl" shadow="xl" maxW="400px" textAlign="center">
-        {status === "loading" && <Spinner size="xl" color="teal.500" />}
+    <Center h="100vh" bg="gray.50" _dark={{ bg: "gray.900" }}>
+      <Stack 
+        align="center" 
+        gap={6} 
+        p={10} 
+        bg="white" 
+        _dark={{ bg: "gray.800" }} 
+        borderRadius="2xl" 
+        shadow="xl" 
+        maxW="400px" 
+        textAlign="center"
+      >
+        {status === "loading" && (
+          <>
+            <Spinner size="xl" color="teal.500" />
+            <Text>Verifying your email...</Text>
+          </>
+        )}
         
         {status === "success" && (
           <>
-            <Icon as={LuCircleCheck} color="green.500" boxSize="60px" />
+            <Box color="green.500">
+              <LuCircleCheck size={60} />
+            </Box>
             <Heading size="lg">Email Verified!</Heading>
             <Text color="gray.500">Your account is now active. You can proceed to login.</Text>
-            <Button colorPalette="teal" w="full" onClick={() => router.push("/login")}>Go to Login</Button>
+            <Button colorPalette="teal" w="full" onClick={() => router.push("/login?verified=true")}>
+              Go to Login
+            </Button>
           </>
         )}
 
         {status === "error" && (
           <>
-            <Icon as={LuCircleX} color="red.500" boxSize="60px" />
+            <Box color="red.500">
+              <LuCircleX size={60} />
+            </Box>
             <Heading size="lg">Verification Failed</Heading>
             <Text color="gray.500">The link is invalid or has expired.</Text>
-            <Button variant="outline" w="full" onClick={() => router.push("/signup")}>Back to Signup</Button>
+            <Button variant="outline" w="full" onClick={() => router.push("/signup")}>
+              Back to Signup
+            </Button>
           </>
         )}
       </Stack>
     </Center>
   );
 }
+
+export async function getServerSideProps() {
+  return { props: {} };
+}
+
+export default VerifyEmailPage;

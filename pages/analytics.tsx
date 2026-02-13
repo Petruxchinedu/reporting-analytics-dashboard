@@ -1,7 +1,5 @@
-"use client";
-
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router"; // Changed from next/navigation
 import { useSession } from "next-auth/react";
 import {
   Box,
@@ -23,43 +21,44 @@ import {
   LuCircleHelp,
 } from "react-icons/lu";
 
-/**
- * Maps backend stat "type" → UI icon
- * Backend owns meaning
- * Frontend owns presentation
- */
-const IconMap: Record<string, any> = {
-  reports: LuFileText,
-  pending: LuActivity,
-  generated: LuTrendingUp,
+const renderIcon = (type: string) => {
+  const iconProps = { size: 20 };
+  
+  switch (type) {
+    case "reports":
+      return <LuFileText {...iconProps} />;
+    case "pending":
+      return <LuActivity {...iconProps} />;
+    case "generated":
+      return <LuTrendingUp {...iconProps} />;
+    default:
+      return <LuCircleHelp {...iconProps} />;
+  }
 };
 
-export default function AnalyticsPage() {
+function AnalyticsPage() {
   const { status } = useSession();
   const router = useRouter();
 
-  // Route protection
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
     }
   }, [status, router]);
 
- // Fetch analytics data
-const { data, isLoading, error } = useQuery({
-  queryKey: ["analytics-data"],
-  queryFn: async () => {
-    // This calls pages/api/analytics/index.ts
-    const res = await fetch("/api/analytics"); 
-    if (!res.ok) {
-      throw new Error("Failed to fetch analytics data");
-    }
-    return res.json();
-  },
-  refetchOnWindowFocus: true, // Refresh when you switch back to the tab
-});
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["analytics-data"],
+    queryFn: async () => {
+      const res = await fetch("/api/analytics");
+      if (!res.ok) {
+        throw new Error("Failed to fetch analytics data");
+      }
+      return res.json();
+    },
+    refetchOnWindowFocus: true,
+    enabled: status === "authenticated",
+  });
 
-  // Loading state
   if (status === "loading" || isLoading) {
     return (
       <Center h="100vh">
@@ -71,7 +70,6 @@ const { data, isLoading, error } = useQuery({
     );
   }
 
-  // Error state
   if (error || !data?.stats) {
     return (
       <DashboardLayout>
@@ -96,58 +94,53 @@ const { data, isLoading, error } = useQuery({
         </Text>
 
         <SimpleGrid columns={{ base: 1, md: 3 }} gap={6}>
-          {data.stats.map((stat: any, i: number) => {
-            const IconComponent = IconMap[stat.type] || LuCircleHelp;
-
-            return (
-              <Box
-                key={i}
-                p={6}
-                bg="white"
-                _dark={{ bg: "gray.900" }}
-                borderRadius="2xl"
-                boxShadow="sm"
-                border="1px solid"
-                borderColor="gray.100"
-                _darkBorderColor="gray.800"
-              >
-                <Flex justify="space-between" align="center" mb={4}>
-                  <Box
-                    p={2}
-                    bg="teal.50"
-                    _dark={{ bg: "teal.900/30" }}
-                    borderRadius="lg"
-                    color="teal.600"
-                  >
-                    <IconComponent size={20} />
-                  </Box>
-
-                  <Badge
-                    colorPalette={
-                      stat.type === "pending" ? "orange" : "green"
-                    }
-                    variant="subtle"
-                  >
-                    {stat.change}
-                  </Badge>
-                </Flex>
-
-                <Text
-                  fontSize="sm"
-                  color="gray.500"
-                  fontWeight="medium"
+          {data.stats.map((stat: any, i: number) => (
+            <Box
+              key={i}
+              p={6}
+              bg="white"
+              borderRadius="2xl"
+              boxShadow="sm"
+              border="1px solid"
+              borderColor="gray.100"
+              _dark={{ bg: "gray.900", borderColor: "gray.800" }}
+            >
+              <Flex justify="space-between" align="center" mb={4}>
+                <Box
+                  p={2}
+                  bg="teal.50"
+                  _dark={{ bg: "teal.900/30" }}
+                  borderRadius="lg"
+                  color="teal.600"
                 >
-                  {stat.label}
-                </Text>
+                  {renderIcon(stat.type)}
+                </Box>
 
-                <Heading size="xl" mt={1}>
-                  {stat.value}
-                </Heading>
-              </Box>
-            );
-          })}
+                <Badge
+                  colorPalette={stat.type === "pending" ? "orange" : "green"}
+                  variant="subtle"
+                >
+                  {stat.change}
+                </Badge>
+              </Flex>
+
+              <Text fontSize="sm" color="gray.500" fontWeight="medium">
+                {stat.label}
+              </Text>
+
+              <Heading size="xl" mt={1}>
+                {stat.value}
+              </Heading>
+            </Box>
+          ))}
         </SimpleGrid>
       </Box>
     </DashboardLayout>
   );
 }
+
+export async function getServerSideProps() {
+  return { props: {} };
+}
+
+export default AnalyticsPage;

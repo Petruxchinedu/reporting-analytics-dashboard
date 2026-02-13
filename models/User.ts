@@ -6,6 +6,10 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: "admin" | "staff" | "user";
+  isVerified: boolean;
+  verificationToken?: string;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
   settings?: {
     darkMode: boolean;
     notifications: boolean;
@@ -21,13 +25,13 @@ const UserSchema: Schema<IUser> = new Schema(
     password: { type: String, required: true },
     role: { 
       type: String, 
-      enum: ["admin", "user"], 
+      enum: ["admin", "staff", "user"], 
       default: "user" 
     },
     isVerified: { type: Boolean, default: false },
-  verificationToken: String,
-  resetPasswordToken: String,
-  resetPasswordExpires: Date,
+    verificationToken: { type: String },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
     settings: {
       darkMode: { type: Boolean, default: false },
       notifications: { type: Boolean, default: true },

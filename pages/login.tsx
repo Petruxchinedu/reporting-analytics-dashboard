@@ -1,7 +1,5 @@
-"use client";
-
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/router"; // Changed from next/navigation
 import {
   Box,
   Button,
@@ -13,7 +11,6 @@ import {
   IconButton,
   HStack,
   Link as ChakraLink,
-  Field,
 } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LuEye, LuEyeOff, LuCircleAlert, LuArrowRight, LuCircleCheck } from "react-icons/lu";
@@ -24,9 +21,9 @@ import { ThemeToggle } from "../components/ui/theme-toggle";
 const MotionFlex = motion.create(Flex);
 const MotionStack = motion.create(Stack);
 
-export default function LoginPage() {
+function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const { status, verified } = router.query; // Get query params
   
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -34,8 +31,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   
   // URL Status Messages
-  const isPending = searchParams.get("status") === "pending";
-  const isVerified = searchParams.get("verified") === "true";
+  const isPending = status === "pending";
+  const isVerified = verified === "true";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,7 +76,6 @@ export default function LoginPage() {
         />
         
         <MotionStack gap={8} maxW="440px" zIndex={1} initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }}>
-          {/* FIXED: Hydration error resolved by using block spans instead of <br /> */}
           <Heading size="4xl" color="white" fontWeight="black" lineHeight="shorter">
             Experience the
             <Text as="span" color="teal.200" display="block">next generation</Text>
@@ -141,19 +137,26 @@ export default function LoginPage() {
 
             <form onSubmit={handleLogin}>
               <Stack gap={5}>
-                <Field.Root>
-                  <Field.Label fontWeight="bold" fontSize="xs" color="gray.500">EMAIL ADDRESS</Field.Label>
+                {/* Email Field */}
+                <Stack gap={1.5}>
+                  <Text fontWeight="bold" fontSize="xs" color="gray.500">EMAIL ADDRESS</Text>
                   <Input 
                     size="lg" borderRadius="xl" placeholder="name@company.com" 
                     value={email} onChange={(e) => setEmail(e.target.value)} required 
                     bg="gray.50" _dark={{ bg: "gray.800" }} border="none"
                   />
-                </Field.Root>
+                </Stack>
 
-                <Field.Root>
-                  <Flex justify="space-between" align="center" mb={1}>
-                    <Field.Label fontWeight="bold" fontSize="xs" color="gray.500" mb={0}>PASSWORD</Field.Label>
-                
+                {/* Password Field */}
+                <Stack gap={1.5}>
+                  <Flex justify="space-between" align="center">
+                    <Text fontWeight="bold" fontSize="xs" color="gray.500">PASSWORD</Text>
+                    <ChakraLink 
+                      fontSize="xs" color="teal.600" fontWeight="bold" 
+                      onClick={() => router.push("/forgot-password")}
+                    >
+                      Forgot Password?
+                    </ChakraLink>
                   </Flex>
                   <HStack width="full" gap={0}>
                     <Input 
@@ -171,15 +174,7 @@ export default function LoginPage() {
                       {showPassword ? <LuEyeOff /> : <LuEye />}
                     </IconButton>
                   </HStack>
-                </Field.Root>
-                    
-                    {/* FORGOT PASSWORD LINK */}
-                    <ChakraLink 
-                      fontSize="xs" color="teal.600" fontWeight="bold" 
-                      onClick={() => router.push("/forgot-password")}
-                    >
-                      Forgot Password?
-                    </ChakraLink>
+                </Stack>
 
                 <Button 
                   type="submit" colorPalette="teal" size="xl" borderRadius="xl" 
@@ -202,3 +197,9 @@ export default function LoginPage() {
     </Flex>
   );
 }
+
+export async function getServerSideProps() {
+  return { props: {} };
+}
+
+export default LoginPage;

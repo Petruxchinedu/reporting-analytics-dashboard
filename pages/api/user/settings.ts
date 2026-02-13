@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
-import { connectDB } from "../../../lib/db";
+import connectDB  from "../../../lib/db";
 import UserSettings from "../../../models/UserSettings";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

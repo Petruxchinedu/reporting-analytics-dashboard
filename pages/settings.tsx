@@ -1,7 +1,5 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router"; // Changed
 import { useSession } from "next-auth/react";
 import {
   Box,
@@ -9,11 +7,10 @@ import {
   Text,
   Stack,
   HStack,
-  Switch,
+  Switch as ChakraSwitch,
   Button,
   Spinner,
   Center,
-  Field,
   Separator,
 } from "@chakra-ui/react";
 import DashboardLayout from "../components/layout/DashboardLayout";
@@ -22,22 +19,19 @@ import { fetchUserSettings, updateUserSettings } from "../lib/api/userSettings";
 import { toaster } from "../components/ui/toaster";
 import { useColorMode } from "../components/ui/color-mode";
 
-export default function SettingsPage() {
+function SettingsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { colorMode, setColorMode } = useColorMode();
 
-  // Local state for the switch to make it feel instant (Optimistic UI)
   const [notifsEnabled, setNotifsEnabled] = useState(false);
 
-  // 1. Load settings from Database
   const { data, isLoading, error } = useQuery({
     queryKey: ["user-settings"],
     queryFn: fetchUserSettings,
   });
 
-  // 2. Sync Local UI when data arrives from database
   useEffect(() => {
     if (data) {
       setNotifsEnabled(data.notificationsEnabled);
@@ -45,7 +39,6 @@ export default function SettingsPage() {
     }
   }, [data, setColorMode]);
 
-  // 3. Update settings Mutation
   const mutation = useMutation({
     mutationFn: updateUserSettings,
     onSuccess: () => {
@@ -57,7 +50,6 @@ export default function SettingsPage() {
       });
     },
     onError: () => {
-      // Revert local state if DB update fails
       setNotifsEnabled(!notifsEnabled);
       toaster.create({
         title: "Sync Error",
@@ -68,16 +60,15 @@ export default function SettingsPage() {
   });
 
   const handleToggleNotifs = (details: { checked: boolean }) => {
-    setNotifsEnabled(details.checked); // 1. Instant UI update
-    mutation.mutate({ notificationsEnabled: details.checked }); // 2. Background DB update
+    setNotifsEnabled(details.checked);
+    mutation.mutate({ notificationsEnabled: details.checked });
   };
 
   const handleThemeChange = (newTheme: string) => {
-    setColorMode(newTheme); // 1. Instant CSS change
-    mutation.mutate({ theme: newTheme }); // 2. Background DB update
+    setColorMode(newTheme);
+    mutation.mutate({ theme: newTheme });
   };
 
-  // Route Protection
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
@@ -115,9 +106,16 @@ export default function SettingsPage() {
           {/* Appearance Section */}
           <Box>
             <Heading size="md" mb={4}>Appearance</Heading>
-            <Box p={6} bg="white" _dark={{ bg: "gray.900" }} borderRadius="2xl" border="1px solid" borderColor="gray.100" _darkBorderColor="gray.800">
-              <Field.Root>
-                <Field.Label mb={3}>Interface Theme</Field.Label>
+            <Box 
+              p={6} 
+              bg="white" 
+              borderRadius="xl" 
+              border="1px solid" 
+              borderColor="gray.100" 
+              _dark={{ bg: "gray.900", borderColor: "gray.800" }}
+            >
+              <Stack gap={3}>
+                <Text fontSize="sm" fontWeight="medium">Interface Theme</Text>
                 <HStack gap={3}>
                   {["light", "dark", "system"].map((t) => (
                     <Button
@@ -133,7 +131,7 @@ export default function SettingsPage() {
                     </Button>
                   ))}
                 </HStack>
-              </Field.Root>
+              </Stack>
             </Box>
           </Box>
 
@@ -142,33 +140,45 @@ export default function SettingsPage() {
           {/* Notifications Section */}
           <Box>
             <Heading size="md" mb={4}>Notifications</Heading>
-            <Box p={6} bg="white" _dark={{ bg: "gray.900" }} borderRadius="2xl" border="1px solid" borderColor="gray.100" _darkBorderColor="gray.800">
-              <Field.Root>
-                <HStack justify="space-between" align="center" width="full">
-                  <Box>
-                    <Field.Label mb={0} fontSize="md">Email Notifications</Field.Label>
-                    <Text fontSize="sm" color="gray.500">Get updates on your weekly analytics summary.</Text>
-                  </Box>
-                  
-                  <Switch.Root 
-                    colorPalette="teal"
-                    size="lg"
-                    checked={notifsEnabled} // Uses local state for instant response
-                    onCheckedChange={handleToggleNotifs}
-                  >
-                    <Switch.Control>
-                      <Switch.Thumb />
-                    </Switch.Control>
-                  </Switch.Root>
-                </HStack>
-              </Field.Root>
+            <Box 
+              p={6} 
+              bg="white" 
+              borderRadius="2xl" 
+              border="1px solid" 
+              borderColor="gray.100" 
+              _dark={{ bg: "gray.900", borderColor: "gray.800" }}
+            >
+              <HStack justify="space-between" align="center" width="full">
+                <Box>
+                  <Text fontSize="md" fontWeight="medium" mb={1}>Email Notifications</Text>
+                  <Text fontSize="sm" color="gray.500">Get updates on your weekly analytics summary.</Text>
+                </Box>
+                
+                <ChakraSwitch.Root
+                  colorPalette="teal"
+                  size="lg"
+                  checked={notifsEnabled}
+                  onCheckedChange={handleToggleNotifs}
+                >
+                  <ChakraSwitch.HiddenInput />
+                  <ChakraSwitch.Control />
+                  <ChakraSwitch.Thumb />
+                </ChakraSwitch.Root>
+              </HStack>
             </Box>
           </Box>
 
           {/* Security Section */}
           <Box>
             <Heading size="md" mb={4}>Security</Heading>
-            <Box p={6} bg="white" _dark={{ bg: "gray.900" }} borderRadius="2xl" border="1px solid" borderColor="gray.100" _darkBorderColor="gray.800">
+            <Box 
+              p={6} 
+              bg="white" 
+              borderRadius="2xl" 
+              border="1px solid" 
+              borderColor="gray.100" 
+              _dark={{ bg: "gray.900", borderColor: "gray.800" }}
+            >
               <Text fontSize="sm" color="gray.500">Signed in as:</Text>
               <Text fontWeight="bold" fontSize="md">{session?.user?.email}</Text>
             </Box>
@@ -178,3 +188,9 @@ export default function SettingsPage() {
     </DashboardLayout>
   );
 }
+
+export async function getServerSideProps() {
+  return { props: {} };
+}
+
+export default SettingsPage;

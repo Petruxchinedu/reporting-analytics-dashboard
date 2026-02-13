@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { connectDB } from "lib/db";
+import connectDB  from "lib/db";
 import User from "models/User";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
