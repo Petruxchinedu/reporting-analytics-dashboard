@@ -32,6 +32,8 @@ export const authOptions: NextAuthOptions = {
 
   session: {
     strategy: "jwt",
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+
   },
 
   callbacks: {
@@ -56,9 +58,14 @@ export const authOptions: NextAuthOptions = {
 
   pages: {
     signIn: "/login",
+        error: "/login",
+
   },
 
   secret: process.env.NEXTAUTH_SECRET,
+
+  useSecureCookies: process.env.NODE_ENV === "production",
+
 };
 
 export default NextAuth(authOptions);
