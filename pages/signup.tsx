@@ -117,11 +117,21 @@ function SignUpPage() {
             </Stack>
 
             {/* Error Message Display */}
-            {clientError && (
-<HStack p={4} bg="red.50" border="1px solid" borderColor="red.200" borderRadius="xl" color="red.700" _dark={{ bg: "red.950/20", color: "red.400" }}>                <LuCircleAlert />
-                <Text fontSize="sm" fontWeight="medium">{clientError}</Text>
-              </HStack>
-            )}
+  {/* Error Message Display */}
+{clientError && (
+  <HStack 
+    p={4} 
+    bg="red.50" 
+    border="1px solid" 
+    borderColor="red.200" 
+    borderRadius="xl" 
+    color="red.700" 
+    _dark={{ bg: "red.950/20", color: "red.400" }}
+  >
+    <LuCircleAlert />
+    <Text fontSize="sm" fontWeight="medium">{clientError}</Text>
+  </HStack>
+)}
 
             <form onSubmit={handleSubmit}>
               <Stack gap={5}>
