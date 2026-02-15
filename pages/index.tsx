@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useRouter } from "next/router"; // Changed
+import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { Box, Heading, Text, Spinner, Center } from "@chakra-ui/react";
 import DashboardLayout from "../components/layout/DashboardLayout";
@@ -40,7 +40,9 @@ function IndexPage() {
     );
   }
 
-  if (status === "unauthenticated") return null;
+  if (status === "unauthenticated") {
+    return null; // Will redirect via useEffect
+  }
 
   return (
     <DashboardLayout>
@@ -81,7 +83,22 @@ function IndexPage() {
   );
 }
 
-export async function getServerSideProps() {
+// Add this to make it server-side only
+export async function getServerSideProps(context: any) {
+  // Check if user is authenticated via cookies
+  const { req } = context;
+  const token = req.cookies['next-auth.session-token'] || req.cookies['__Secure-next-auth.session-token'];
+  
+  // If no token, redirect to login immediately on server
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+
   return { props: {} };
 }
 
