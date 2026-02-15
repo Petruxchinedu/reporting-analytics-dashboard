@@ -1,19 +1,15 @@
 import { useState } from "react";
-import { useRouter } from "next/router"; // Changed
+import { useRouter } from "next/router";
 import { 
   Box, Button, Flex, Stack, Heading, Text, Input, 
   IconButton, HStack, Link as ChakraLink 
 } from "@chakra-ui/react";
-import { motion, AnimatePresence } from "framer-motion";
 import { 
   LuEye, LuEyeOff, LuCircleAlert, 
   LuShieldCheck, LuZap, LuGlobe 
 } from "react-icons/lu";
 import { useMutation } from "@tanstack/react-query";
 import { toaster } from "../components/ui/toaster";
-
-const MotionFlex = motion.create(Flex);
-const MotionStack = motion.create(Stack);
 
 function SignUpPage() {
   const router = useRouter();
@@ -84,12 +80,7 @@ function SignUpPage() {
         />
 
         <Stack gap={10} maxW="460px" zIndex={1}>
-          <MotionStack 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.2 }}
-            gap={6}
-          >
+          <Stack gap={6}>
             <Heading size="4xl" fontWeight="black" lineHeight="1.1">
               Analyze your data 
               <Text as="span" color="teal.200" display="block">like a pro.</Text>
@@ -97,7 +88,7 @@ function SignUpPage() {
             <Text fontSize="xl" color="teal.50" fontWeight="medium">
               Join 10,000+ professionals generating automated reports every day.
             </Text>
-          </MotionStack>
+          </Stack>
 
           <Stack gap={5}>
             {[
@@ -118,27 +109,20 @@ function SignUpPage() {
 
       {/* Right Side: Form */}
       <Flex flex="1" align="center" justify="center" p={8} bg="white" _dark={{ bg: "gray.950" }}>
-        <MotionFlex 
-          initial={{ opacity: 0, x: 20 }} 
-          animate={{ opacity: 1, x: 0 }} 
-          direction="column" w="full" maxW="md"
-        >
+        <Flex direction="column" w="full" maxW="md">
           <Stack gap={8}>
             <Stack>
               <Heading size="2xl" fontWeight="bold" letterSpacing="tight">Create Account</Heading>
               <Text color="gray.500">Sign up in less than 2 minutes.</Text>
             </Stack>
 
-            <AnimatePresence>
-              {clientError && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
-                  <HStack p={4} bg="red.50" _dark={{ bg: "red.950/20", color: "red.400" }} border="1px solid" borderColor="red.200" borderRadius="xl" color="red.700" >
-                    <LuCircleAlert />
-                    <Text fontSize="sm" fontWeight="medium">{clientError}</Text>
-                  </HStack>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Error Message Display */}
+            {clientError && (
+              <HStack p={4} bg="red.50" _dark={{ bg: "red.950/20" }} border="1px solid" borderColor="red.200" borderRadius="xl" color="red.700" _dark={{ color: "red.400" }}>
+                <LuCircleAlert />
+                <Text fontSize="sm" fontWeight="medium">{clientError}</Text>
+              </HStack>
+            )}
 
             <form onSubmit={handleSubmit}>
               <Stack gap={5}>
@@ -203,7 +187,7 @@ function SignUpPage() {
               </ChakraLink>
             </Text>
           </Stack>
-        </MotionFlex>
+        </Flex>
       </Flex>
     </Flex>
   );

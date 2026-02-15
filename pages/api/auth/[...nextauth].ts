@@ -1,8 +1,8 @@
-import NextAuth, { type NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import connectDB from "../../../lib/db";
+import User from "../../../models/User";
 import bcrypt from "bcryptjs";
-import  connectDB  from "lib/db";
-import User from "models/User";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -10,60 +10,80 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        try {
+          console.log("=== AUTH START ===");
+          
+          if (!credentials?.email || !credentials?.password) {
+            console.error("Missing credentials");
+            return null;
+          }
 
-        await connectDB();
+          console.log("Connecting to DB...");
+          await connectDB();
+          console.log("DB connected");
 
-        const user = await User.findOne({ email: credentials.email }).select("+password");
-        if (!user) return null;
+          console.log("Finding user...");
+          const user = await User.findOne({ email: credentials.email });
+          
+          if (!user) {
+            console.error("User not found");
+            return null;
+          }
 
-        const isValid = await bcrypt.compare(credentials.password, user.password);
-        if (!isValid) return null;
+          console.log("Verifying password...");
+          const isValid = await bcrypt.compare(credentials.password, user.password);
+          
+          if (!isValid) {
+            console.error("Invalid password");
+            return null;
+          }
 
-        return { id: user._id.toString(), email: user.email, name: user.name };
-      },
-    }),
+          console.log("Auth successful");
+          return {
+            id: user._id.toString(),
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error("=== AUTH ERROR ===");
+          console.error(error);
+          return null;
+        }
+      }
+    })
   ],
-
-  session: {
-    strategy: "jwt",
-        maxAge: 30 * 24 * 60 * 60, // 30 days
-
-  },
-
+  
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
+        token.role = (user as any).role;
       }
       return token;
     },
-
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string;
-        session.user.email = token.email as string;
-        session.user.name = token.name as string;
+        (session.user as any).id = token.id;
+        (session.user as any).role = token.role;
       }
       return session;
-    },
+    }
   },
 
   pages: {
     signIn: "/login",
-        error: "/login",
+  },
 
+  session: {
+    strategy: "jwt",
   },
 
   secret: process.env.NEXTAUTH_SECRET,
-
-  useSecureCookies: process.env.NODE_ENV === "production",
-
+  debug: true, // Enable debug mode
 };
 
 export default NextAuth(authOptions);
