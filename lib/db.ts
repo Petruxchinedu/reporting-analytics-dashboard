@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  throw new Error(
-    "Please define the MONGODB_URI environment variable inside .env.local"
+  console.error(
+    "⚠️ MONGODB_URI environment variable is not defined. Database operations will fail."
   );
 }
 
@@ -35,6 +35,12 @@ if (!global.mongoose) {
 async function connectDB() {
   if (cached.conn) {
     return cached.conn;
+  }
+
+  if (!MONGODB_URI) {
+    throw new Error(
+      "MONGODB_URI is not defined. Please set it in your environment variables."
+    );
   }
 
   if (!cached.promise) {

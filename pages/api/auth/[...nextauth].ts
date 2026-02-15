@@ -12,21 +12,19 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
 
- async authorize(credentials) {
-  if (!credentials?.email || !credentials?.password) return null;
+        await connectDB();
 
-  await connectDB();
+        const user = await User.findOne({ email: credentials.email }).select("+password");
+        if (!user) return null;
 
-  const user = await User.findOne({ email: credentials.email }).select("+password"); // <-- select password
-  if (!user) return null;
+        const isValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isValid) return null;
 
-  const isValid = await bcrypt.compare(credentials.password, user.password);
-  if (!isValid) return null;
-
-  return { id: user._id.toString(), email: user.email, name: user.name };
-}
-
+        return { id: user._id.toString(), email: user.email, name: user.name };
+      },
     }),
   ],
 
